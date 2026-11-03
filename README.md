@@ -13,9 +13,7 @@ Day 1: Backend API
 Files required: main.py, functions.py, recruitment.db
 Libraries needed: FastAPI + SQLite
 
-Soham: E7, E8, E9
-Tanush: E4, E5, E6
-Abrar: E1, E2, E3
+Soham: E1, E2, E3, E4, E5, E6, E7, E8, E9
 
 Database file name: recruitment.db
 Tables: clubs and applications
@@ -31,75 +29,73 @@ Day 2: Frontend
 Files required: Clubs.jsx, MyApplications.jsx, and Coordinator.jsx in src/components, and app.jsx in src/
 npm module installation required
 
-Soham: Coordinator.jsx + App.jsx implementation
-Tanush: Clubs.jsx + App.jsx implementation
-Abrar: MyApplications.jsx + App.jsx implementation
+Soham: Coordinator.jsx + App.jsx implementation, Clubs.jsx, MyApplications.jsx
 
 
 API contracts
 
-E1: Get all the clubs. Can be filtered by category. Each one includes its number of applications that aren't withdrawn.
+E1: Get all clubs
 Method: GET
 Path: /clubs
-Request: None
-Success response: 200 (Okay)
-Error code: 422 (Invalid Category)
+Request: category (Query parameter, optional string)
+Success Code: 200
+Error Code: 422 (Invalid category)
 
-E2: Get one club by its id, with its list of applications.
+E2: Get one club by ID
 Method: GET
 Path: /clubs/{club_id}
-Request: None
-Success response: 200 (Okay)
-Error code: 404 (club doesn't exist)
+Request: club_id (Path parameter, integer)
+Success Code: 200
+Error Code: 404 (Club that doesn't exist)
 
-E3: Add a club: name, category, seats and deadline. It starts recruiting.
+E3: Add a club
 Method: POST
 Path: /clubs
-Request: name, category, seats, deadline
-Success response: 201 (Creation success)
-Error code: 422 (Missing fields or invalid data)
+Request: JSON body with name, category, seats, deadline
+Success Code: 201
+Error Code: 422 (Missing fields or invalid values)
 
-E4: Open or close a club's recruitment.
+E4: Open or close recruitment
 Method: PATCH
 Path: /clubs/{club_id}/recruitment
-Request: recruiting
-Success response: 200 (Okay)
-Error code: 404 (If the club id doesn't exist), 422 (Invalid data apart from yes or no)
+Request: club_id (Path parameter, integer) and recruiting (Query parameter, integer: 1 or 0)
+Success Code: 200
+Error Code: 404 (Club doesn't exist), 422 (Value entry apart from 1 or 0)
 
-E5: Apply to a club: roll number and why you want to join. It starts as applied.
+E5: Apply to a club
 Method: POST
 Path: /clubs/{club_id}/applications
-Request: roll_no, why_join
-Success response: 201 (Application got added)
-Error code: 400 (Bad request. The student attempts to join another club after they have joined another 3 clubs or tries to applies for same club again),
-            404 (The club doesn't exist), 422 (Invalid status apart from applied, shortlisted, selected, rejected, withdrawn.)
+Request: club_id (Path parameter, integer) and JSON body with roll_no, why_join
+Success Code: 201
+Error Code: 400 (Club closed, user attempt to join same club again, or attempting to join more than 3 clubs),
+            404 (Club doesn't exist), 422 (missing fields)
 
-E6: Move an application to shortlisted, selected or rejected.
+E6: Update application status
 Method: PATCH
 Path: /applications/{application_id}/status
-Request: status
-Success response: 200 (Status updated successfully)
-Error code: 400 (Wrong change as per rules or the club is full), 404(The application ID doesn't exist), 422(Missing status)
+Request: application_id (Path parameter, integer) and status (Query parameter, string)
+Success Code: 200
+Error Code: 400 (Invalid status transition, club is filled, or student selection limitation),
+            404 (Application not found), 422 (Invalid status choice)
 
-E7: Withdraw an application, with the applicant's roll number.
+E7: Withdraw application
 Method: PATCH
 Path: /applications/{application_id}/withdraw
-Request: roll_no
-Success response: 200 (Okay, application withdrawn)
-Error code: 400 (Unable to withdraw application), 403 (Restricted action, the roll number doesn't match the applicant), 404 (Application doesn't exist),
-			422 (Missing roll number or invalid roll number)
+Request: application_id (Path parameter, integer) and roll_no (Query parameter, string)
+Success Code: 200
+Error Code: 400 (Cannot withdraw after shortlisting),
+            403 (Roll number does not match applicant), 404 (Application not found), 422 (Missing roll number)
 
-E8: Get one student's applications, by roll number. Each one includes the club's name.
+E8: Get student applications
 Method: GET
 Path: /students/{roll_no}/applications
-Request: None
-Success response: 200 (Okay, students applications with club names)
-Error code: 404 (Roll number doesn't exist) 422 (If the roll number is invalid or missing)
+Request: roll_no (Path parameter, string)
+Success Code: 200
+Error Code: 404 (No applications found for this student), 422 (Invalid roll number format)
 
-E9: Get the summary: for each club, how many applications are applied, shortlisted, selected and rejected.
+E9: Get recruitment summary
 Method: GET
 Path: /summary
 Request: None
-Success response: 200 (Okay, application counts for each club)
-Error code: 500 (Unexpected server error)
-
+Success Code: 200
+Error Code: 500 (Server failure)

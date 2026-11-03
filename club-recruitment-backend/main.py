@@ -22,7 +22,7 @@ def get_clubs(category=None):
     return functions.get_all_clubs(category)
 
 @app.get("/clubs/{club_id}")
-def get_club_by_id(club_id):
+def get_club_by_id(club_id: int):
     club = functions.get_club_by_id(club_id)
     if not club:
         raise HTTPException(status_code=404, detail="Club not found")
@@ -42,17 +42,17 @@ def add_club(name, category, seats: int, deadline):
     return functions.add_new_club(name, category, seats, deadline)
 
 @app.patch("/clubs/{club_id}/recruitment")
-def update_recruitment(club_id, recruiting=None):
-    if recruiting not in ["0", "1", 0, 1]:
+def update_recruitment(club_id: int, recruiting: int):
+    if recruiting not in [0, 1]:
         raise HTTPException(status_code=422, detail="Recruiting must be 1 or 0")
 
-    response = functions.update_club_recruitment(club_id, int(recruiting))
+    response = functions.update_club_recruitment(club_id, recruiting)
     if not response:
         raise HTTPException(status_code=404, detail="Club not found")
     return response
 
 @app.post("/clubs/{club_id}/applications")
-def apply_to_club(club_id, roll_no, why_join):
+def apply_to_club(club_id: int, roll_no, why_join):
     if not roll_no or not why_join:
         raise HTTPException(status_code=422, detail="Missing fields")
     if len(why_join) < 20:
@@ -82,7 +82,7 @@ def apply_to_club(club_id, roll_no, why_join):
     return functions.apply_club(club_id, roll_no, why_join)
 
 @app.patch("/applications/{application_id}/status")
-def update_status(application_id, status):
+def update_status(application_id: int, status):
     if status not in ["shortlisted", "selected", "rejected"]:
         raise HTTPException(status_code=422, detail="Invalid status")
 
@@ -91,7 +91,7 @@ def update_status(application_id, status):
     for club in functions.get_all_clubs():
         club_detail = functions.get_club_by_id(club["id"])
         for app_item in club_detail["applications"]:
-            if app_item["id"] == int(application_id):
+            if app_item["id"] == application_id:
                 target_app = app_item
                 target_club = club_detail
                 break
