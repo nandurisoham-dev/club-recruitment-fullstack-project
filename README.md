@@ -13,9 +13,7 @@ Day 1: Backend API
 Files required: main.py, functions.py, recruitment.db
 Libraries needed: FastAPI + SQLite
 
-Soham: E7, E8, E9
-Tanush: E4, E5, E6
-Abrar: E1, E2, E3
+Soham: E1, E2, E3, E4, E5, E6, E7, E8, E9
 
 Database file name: recruitment.db
 Tables: clubs and applications
@@ -31,9 +29,7 @@ Day 2: Frontend
 Files required: Clubs.jsx, MyApplications.jsx, and Coordinator.jsx in src/components, and app.jsx in src/
 npm module installation required
 
-Soham: Coordinator.jsx + App.jsx implementation
-Tanush: Clubs.jsx + App.jsx implementation
-Abrar: MyApplications.jsx + App.jsx implementation
+Soham: Coordinator.jsx + App.jsx implementation, Clubs.jsx, MyApplications.jsx
 
 
 API contracts
