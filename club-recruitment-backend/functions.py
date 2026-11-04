@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Column, create_engine
+from sqlalchemy import Integer, String, Column, ForeignKey, create_engine
 from sqlalchemy.orm import Session, declarative_base
 from datetime import datetime
 
@@ -18,7 +18,7 @@ class Clubs(Base):
 class Applications(Base):
     __tablename__ = 'applications'
     id = Column(Integer, primary_key=True)
-    club_id = Column(Integer)
+    club_id = Column(Integer, ForeignKey('clubs.id'))
     roll_no = Column(String)
     why_join = Column(String)
     status = Column(String, default='applied')
