@@ -26,6 +26,37 @@ class Applications(Base):
 
 Base.metadata.create_all(engine)
 
+session = Session(engine)
+if session.query(Clubs).count() == 0:
+    seed_clubs = [
+        Clubs(name="Coding Club", category="technical", seats=5, deadline="2026-12-31", recruiting=1),
+        Clubs(name="Robotics Club", category="technical", seats=3, deadline="2020-01-01", recruiting=1),
+        Clubs(name="Dance Crew", category="cultural", seats=4, deadline="2026-12-31", recruiting=0),
+        Clubs(name="Sports Club", category="sports", seats=10, deadline="2026-12-31", recruiting=1),
+        Clubs(name="Rotaract", category="social", seats=8, deadline="2026-12-31", recruiting=1),
+        Clubs(name="Literary Society", category="literary", seats=2, deadline="2026-12-31", recruiting=1)
+    ]
+    session.add_all(seed_clubs)
+    session.commit()
+
+    seed_apps = [
+        Applications(club_id=1, roll_no="CS01", why_join="I love programming and solving complex algorithms.", status="applied", applied_on="01-11-2026"),
+        Applications(club_id=1, roll_no="CS02", why_join="I want to build real-world software applications.", status="shortlisted", applied_on="01-11-2026"),
+        Applications(club_id=1, roll_no="CS03", why_join="Interested in competitive programming platforms.", status="selected", applied_on="01-11-2026"),
+        Applications(club_id=1, roll_no="CS04", why_join="Want to work on open source engineering code.", status="rejected", applied_on="01-11-2026"),
+        Applications(club_id=1, roll_no="CS05", why_join="Looking for developer peer community mentorship.", status="withdrawn", applied_on="01-11-2026"),
+        Applications(club_id=2, roll_no="EE01", why_join="I want to design hardware embedded circuit boards.", status="applied", applied_on="01-11-2026"),
+        Applications(club_id=4, roll_no="ME01", why_join="Passionate about playing football and athletics.", status="shortlisted", applied_on="01-11-2026"),
+        Applications(club_id=4, roll_no="ME02", why_join="Want to participate in inter-college sports tournaments.", status="selected", applied_on="01-11-2026"),
+        Applications(club_id=5, roll_no="CE01", why_join="Eager to participate in social service activities.", status="applied", applied_on="01-11-2026"),
+        Applications(club_id=5, roll_no="CE02", why_join="Want to lead community outreach initiatives.", status="shortlisted", applied_on="01-11-2026"),
+        Applications(club_id=6, roll_no="EC01", why_join="I love writing articles and reading classic literature.", status="applied", applied_on="01-11-2026"),
+        Applications(club_id=6, roll_no="EC02", why_join="Excited to participate in debating events.", status="shortlisted", applied_on="01-11-2026")
+    ]
+    session.add_all(seed_apps)
+    session.commit()
+session.close()
+
 def get_all_clubs(category=None):
     session = Session(engine)
     clubs = session.query(Clubs).all()

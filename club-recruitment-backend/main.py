@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 import functions
 
 app = FastAPI()
@@ -28,17 +29,20 @@ def get_club_by_id(club_id: int):
         raise HTTPException(status_code=404, detail="Club not found")
     return club
 
-@app.post("/clubs")
-def add_club(name, category, seats: int, deadline):
+@app.post("/clubs", status_code=201)
+def add_club(name: str, category: str, seats: int, deadline: str):
     if not name or not category or not deadline:
         raise HTTPException(status_code=422, detail="Missing fields")
     if category not in ["technical", "cultural", "sports", "social", "literary"]:
         raise HTTPException(status_code=422, detail="Invalid category")
     if seats < 1 or seats > 30:
         raise HTTPException(status_code=422, detail="Seats must be 1 to 30")
-    if len(deadline) != 10:
-        raise HTTPException(status_code=422, detail="Invalid deadline format")
     
+    try:
+        datetime.strptime(deadline, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Invalid deadline format. Use YYYY-MM-DD")
+
     return functions.add_new_club(name, category, seats, deadline)
 
 @app.patch("/clubs/{club_id}/recruitment")
@@ -51,8 +55,8 @@ def update_recruitment(club_id: int, recruiting: int):
         raise HTTPException(status_code=404, detail="Club not found")
     return response
 
-@app.post("/clubs/{club_id}/applications")
-def apply_to_club(club_id: int, roll_no, why_join):
+@app.post("/clubs/{club_id}/applications", status_code=201)
+def apply_to_club(club_id: int, roll_no: str, why_join: str):
     if not roll_no or not why_join:
         raise HTTPException(status_code=422, detail="Missing fields")
     if len(why_join) < 20:
@@ -63,6 +67,13 @@ def apply_to_club(club_id: int, roll_no, why_join):
         raise HTTPException(status_code=404, detail="Club not found")
     if club["recruiting"] == 0:
         raise HTTPException(status_code=400, detail="Recruitment closed")
+
+    try:
+        deadline_date = datetime.strptime(club["deadline"], "%Y-%m-%d").date()
+        if deadline_date < datetime.now().date():
+            raise HTTPException(status_code=400, detail="Deadline has passed")
+    except ValueError:
+        pass
 
     for app_item in club["applications"]:
         if app_item["roll_no"] == roll_no and app_item["status"] != "withdrawn":
@@ -82,7 +93,7 @@ def apply_to_club(club_id: int, roll_no, why_join):
     return functions.apply_club(club_id, roll_no, why_join)
 
 @app.patch("/applications/{application_id}/status")
-def update_status(application_id: int, status):
+def update_status(application_id: int, status: str):
     if status not in ["shortlisted", "selected", "rejected"]:
         raise HTTPException(status_code=422, detail="Invalid status")
 
@@ -133,7 +144,7 @@ def update_status(application_id: int, status):
     return functions.update_status(application_id, status)
 
 @app.patch("/applications/{application_id}/withdraw")
-def withdraw(application_id: int, roll_no=None):
+def withdraw(application_id: int, roll_no: str = None):
     if not roll_no:
         raise HTTPException(status_code=422, detail="Missing roll number")
 
@@ -157,7 +168,7 @@ def withdraw(application_id: int, roll_no=None):
     return functions.withdraw_app(application_id)
 
 @app.get("/students/{roll_no}/applications")
-def get_student_applications(roll_no):
+def get_student_applications(roll_no: str):
     applications = functions.get_student_apps(roll_no)
     if not applications:
         raise HTTPException(status_code=404, detail="No applications found")
